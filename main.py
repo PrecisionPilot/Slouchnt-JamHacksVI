@@ -1,6 +1,6 @@
 import cv2
-from cv2 import sqrt
-import pose_detection_module as pdm
+from math import sqrt
+import Pose_detection_module as pdm
 import time
 import threading
 
@@ -30,14 +30,15 @@ def getMaxDistance():
         lmList = detector.findPosition(img)
 
         # Get landmarks
-        x1, y1 = lmList[11]
-        x2, y2 = lmList[12]
+        x1, y1 = lmList[11] # left shoulder
+        x2, y2 = lmList[12] # right shoulder
 
         # Get upper chest by averaging landmark 11 and 12
         upperChest = [(x1 + x2) / 2, (y1 + y2) / 2]
         nose = lmList[0]
-        # Pythagorean Theorem
-        distance = sqrt(abs(upperChest[0] - upperChest[1]) ** 2 + abs(nose[0] - nose[1]) ** 2)
+
+        # Distance between the nose and chest
+        distance = sqrt(abs(upperChest[0] - nose[0]) ** 2 + abs(upperChest[1] - nose[1]) ** 2)
 
         # Display distance on screen
         cv2.putText(img, distance, (70, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
@@ -47,27 +48,28 @@ def getMaxDistance():
         cv2.waitKey(1)
     
     # Store the distance to maxDistance
-    global maxDistance
-    maxDistance = distance
+    global maxDist
+    maxDist = distance
 
 
 # Introduction
 print("Hello and welcome to $NAMEOFOURSOFTWARE!")
 getMaxDistance()
+print(maxDist)
 
 # This piece of code is just for reference for now
-while True:
-    # Read image
-    success, img = cap.read()
-    img = detector.findPose(img, True)
-    lmList = detector.findPosition(img)
+# while True:
+#     # Read image
+#     success, img = cap.read()
+#     img = detector.findPose(img, True)
+#     lmList = detector.findPosition(img)
     
-    # Calculating FPS
-    cTime = time.time()
-    fps = 1/(cTime-pTime)
-    pTime = cTime
-    cv2.putText(img, str(int(fps)), (70, 50), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
+#     # Calculating FPS
+#     cTime = time.time()
+#     fps = 1/(cTime-pTime)
+#     pTime = cTime
+#     cv2.putText(img, str(int(fps)), (70, 50), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
 
-    # Show image and wait
-    cv2.imshow("Image", img)
-    cv2.waitKey(1)
+#     # Show image and wait
+#     cv2.imshow("Image", img)
+#     cv2.waitKey(1)
