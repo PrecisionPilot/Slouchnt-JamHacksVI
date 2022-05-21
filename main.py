@@ -36,8 +36,8 @@ def getMaxDistance():
         # Get upper chest by averaging landmark 11 and 12
         upperChest = [(x1 + x2) / 2, (y1 + y2) / 2]
         nose = lmList[0]
-
-        distance = sqrt(upperChest ** 2 + nose ** 2)
+        # Pythagorean Theorem
+        distance = sqrt(abs(upperChest[0] - upperChest[1]) ** 2 + abs(nose[0] - nose[1]) ** 2)
 
         # Display distance on screen
         cv2.putText(img, distance, (70, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
