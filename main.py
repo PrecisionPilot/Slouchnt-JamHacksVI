@@ -1,6 +1,6 @@
 import cv2
 from math import sqrt
-import pose_detection_module as pdm
+import Pose_detection_module as pdm
 import time
 import threading
 from tkinter import *
@@ -60,15 +60,14 @@ def introScreen():
     texts = ["Tip of the day:", tipText ]
     font = cv2.FONT_HERSHEY_SIMPLEX
     for i in range (2):
-        # textsize = cv2.getTextSize(texts[i], font, 1, 2)
-        textsize = cv2.getTextSize("Hello world111111111", font, 1, 2)[0]
+        textsize = cv2.getTextSize(texts[i], font, 1, 2)[0]
     textX = (w - textsize[0]) / 2
     textY = (h + textsize[1]) / 2
 
     #text tips
-    cv2.rectangle(img, (0, 0), (w, h), 0, cv2.FILLED)
-    cv2.putText(img, texts[0], (int(textX), int(textY)), font, 1, (255, 255, 255), 2)
-    cv2.putText(img, texts[1], (int(textX), int(textY) + 50), font, 1, (255, 255, 255), 2)
+    cv2.rectangle(img, (0, 0), (w, h), (0, 128, 255) , cv2.FILLED)
+    cv2.putText(img, texts[0], (int(textX), int(textY)), font, 1, (255, 255, 255), 1.5)
+    cv2.putText(img, texts[1], (int(textX), int(textY) + 50), font, 1, (255, 255, 255), 1.5)
     cv2.imshow("Image", img)
     cv2.waitKey(5000)
 
@@ -88,7 +87,7 @@ def getDistance():
         #text
         text = ["Now Slouch", "Sit Straight"][i == 0]
         cv2.rectangle(img, (0, 0), (w, h), 0, cv2.FILLED)
-        cv2.putText(img, text, (50, int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 4)
+        cv2.putText(img, text, (50, int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 2)
         
         cv2.imshow("Image", img)
         cv2.waitKey(1000)
