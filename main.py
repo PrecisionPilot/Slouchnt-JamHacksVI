@@ -62,6 +62,7 @@ def introScreen():
     cv2.putText(img, texts[0], (int(textX), int(textY)), font, 1, (255, 255, 255), 1)
     cv2.putText(img, texts[1], (int(textX), int(textY) + 50), font, 1, (255, 255, 255), 1)
     cv2.imshow("Image", img)
+    cv2.waitKey(5000)
 
 
 def getDistance():
