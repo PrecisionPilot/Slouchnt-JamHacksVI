@@ -1,6 +1,7 @@
+from hashlib import new
 import cv2
 from math import sqrt
-import Pose_detection_module as pdm
+import pose_detection_module as pdm
 import time
 import threading
 from tkinter import *
@@ -9,6 +10,7 @@ from tkinter import messagebox
 import playsound as playsound
 import random
 import datetime
+import os
 
 # Configurable
 playMusic = True
@@ -33,7 +35,7 @@ win.geometry("150x100")
 win.config(bg='#FFFFFF')
 
 # Store the tips in "tips" frmo "tips.txt"
-with open("tips.txt", "r") as f:
+with open("Assets/tips.txt", "r") as f:
     tips = f.read().split("\n")
 
 #_________________________________________________________________________#
@@ -41,7 +43,7 @@ with open("tips.txt", "r") as f:
 #_________________________________________________________________________#
 
 def rickRoll():
-    playsound.playsound("Never Gonna Give You Up.mp3")
+    playsound.playsound("Assets/Never Gonna Give You Up.mp3")
 
 def userInputProcedure(x):
     global userInput
@@ -62,12 +64,34 @@ def introScreen():
 
     #text tips
     cv2.rectangle(img, (0, 0), (w, h), (98, 73, 119) , cv2.FILLED)
-    bulbImg = cv2.imread("bulb.png", 0)
-    cv2.imshow("Bulb", bulbImg)
+    # bulbImg = cv2.imread("bulb.png", 0)
+    # cv2.imshow("Bulb", bulbImg)
     cv2.putText(img, texts[0], (int(textX), int(textY)), font, 1, (255, 255, 255), 1)
     cv2.putText(img, texts[1], (int(textX), int(textY) + 50), font, 1, (255, 255, 255), 1)
+
+    #User inputs their email
+    with open("Assets/email.txt", "r") as f:
+        contents = f.read()
+
+        # If nothing is in the file
+        if contents == "":
+            top = Tk()
+            L1 = Label(top, text = "Enter email: " )
+            L1.pack(side = LEFT)
+            emailAddress = Entry(top, bd = 5)
+            emailAddress.pack(side = RIGHT)
+
+            emailAddress = str(emailAddress)
+
+            with open("Assets/email.txt", "w") as f:
+                f.write(emailAddress)
+        # If email already exists in file
+        else:
+            emailAddress = contents
+            
+            
     cv2.imshow("Image", img)
-    cv2.waitKey(5000)
+
 
 def getDistance():
     # Computer vision detection system
@@ -109,25 +133,43 @@ def getDistance():
         # Ending screen to tell user when to go back to normal
         if i==1:
             cv2.rectangle(img, (0, 0), (w, h), (98, 73, 119), cv2.FILLED)
-            cv2.putText(img, "Callibration", (50, int(h/2) + 50), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 2)
+            cv2.putText(img, "Callibration", (50, int(h/2) - 50), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 2)
             cv2.putText(img, "Complete", (70, int(h/2) + 50), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 2)
             cv2.imshow("Image", img)
             cv2.waitKey(2500)
-    
-def popUpWindow():
-    win.lift()
-    win.attributes('-topmost',True)
-    win.after_idle(win.attributes,'-topmost',False)
-    messagebox.showwarning("Bad Posture Alert", "FIX YOUR POSTURE!")
-    Button(win, text='Click Me').pack(pady=50)
-
 
 def slouchAlert():
     if playMusic:
         threading.Thread(target=rickRoll).start()
     popUpWindow()
 
+def popUpWindow():
+    win.lift()
+    win.attributes('-topmost', True)
+    win.after_idle(win.attributes,'-topmost', False)
+    messagebox.showwarning("Bad Posture Alert", "FIX YOUR POSTURE!")
+    Button(win, text='Click Me').pack(pady=50)
+
 def quotaCount():
+    newDate = False
+
+    # Get current date
+    date = str(datetime.datetime.now())
+    date = date[0:10]
+    
+    # Check if "Assets/data.dat" file exists
+    if not os.post.exists("Assets/data.dat"):
+        newDate = True
+
+    # If file is empty, add current date
+    with open("Assets/data.dat", "a") as f:
+        if f.read() == "":
+            newDate = True
+    
+    if newDate:
+        with open("Assets/data.dat", "a") as f:
+            f.write(date)
+
     quota += 1
 
 def distancePerFrame():
@@ -160,6 +202,7 @@ def distancePerFrame():
             cv2.rectangle(img, (0, 0), (w, h), (98, 73, 119), cv2.FILLED)
             if initTime + slouchSeconds < currentTime:
                 slouchAlert()
+                quotaCount()
                 initTime = currentTime
         # If good posture
         if distance >= threshold:
@@ -167,7 +210,6 @@ def distancePerFrame():
         
         cv2.imshow("Image", img)
         cv2.waitKey(1)
-
 
 #_________________________________________________________________________#
 # Runtime
