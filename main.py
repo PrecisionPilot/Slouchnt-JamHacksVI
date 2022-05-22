@@ -5,6 +5,7 @@ import time
 import threading
 import tkinter
 import playsound as playsound
+import random
 
 # Initial variables
 cap = cv2.VideoCapture(0)
@@ -13,7 +14,11 @@ detector = pdm.poseDetector()
 # userInput = ""
 Dist = []
 threshold = 0
+tips = []
 
+# Store the tips in "tips" frmo "tips.txt"
+with open("tips.txt", "r") as f:
+    tips = f.read().split("\n")
 
 #_________________________________________________________________________#
 # FUNCTIONS
@@ -22,6 +27,20 @@ threshold = 0
 def userInputProcedure(x):
     global userInput
     userInput = input(x)
+
+def introScreen():
+    success, img = cap.read()
+    h, w, c = img.shape
+    
+    text = random.choice(tips)
+
+    #text tips
+    cv2.rectangle(img, (0, 0), (w, h), 0, cv2.FILLED)
+    cv2.putText(img, "Tip of the day:", (100, int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+    cv2.putText(img, text, (50, int(h/2)+80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+    cv2.imshow("Image", img)
+    cv2.waitKey(5000)
+        
 
 
 def getDistance():
@@ -40,7 +59,7 @@ def getDistance():
         #text
         text = ["Now Slouch", "Sit Straight"][i == 0]
         cv2.rectangle(img, (0, 0), (w, h), 0, cv2.FILLED)
-        cv2.putText(img, text, (50,50), cv2.FONT_HERSHEY_PLAIN, 5, (255, 0, 0), 5)
+        cv2.putText(img, text, (50, int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 4)
         
         cv2.imshow("Image", img)
         cv2.waitKey(2000)
@@ -69,7 +88,7 @@ def getDistance():
 
 def slouchAlert():
     print("STOP IT")
-    cv2.putText(img, "DONT SLOUCH BRO", (50,50), cv2.FONT_HERSHEY_PLAIN, 5, (255, 0, 0), 5)
+    cv2.putText(img, "DONT SLOUCH BRO", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 0, 0), 4)
     cv2.imshow("Image", img)
     cv2.waitKey(1000)
     playsound.playsound("Never Gonna Give You Up.mp3")
@@ -119,6 +138,9 @@ def distancePerFrame():
 
 # Introduction and Data Gathering
 print("Hello and welcome to $NAMEOFOURSOFTWARE!")
+
+# start the program with the intro screen
+introScreen()
 
 # Get distance between nose and shoulder
 getDistance()
