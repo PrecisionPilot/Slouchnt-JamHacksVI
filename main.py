@@ -32,6 +32,9 @@ win.title('Python Guides')
 win.geometry("150x100")
 win.config(bg='#FFFFFF')
 
+# Store the tips in "tips" frmo "tips.txt"
+with open("tips.txt", "r") as f:
+    tips = f.read().split("\n")
 
 # Store the tips in "tips" frmo "tips.txt"
 with open("tips.txt", "r") as f:
@@ -169,6 +172,9 @@ def distancePerFrame():
 
 # Introduction and Data Gathering
 print("Hello and welcome to Slouchn’t")
+
+# start the program with the intro screen
+introScreen()
 
 # start the program with the intro screen
 introScreen()
