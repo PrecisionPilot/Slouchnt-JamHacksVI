@@ -3,8 +3,16 @@ from math import sqrt
 import pose_detection_module as pdm
 import time
 import threading
-import tkinter
+from tkinter import *
+from tkinter import Tk
+from tkinter import messagebox
 import playsound as playsound
+import random
+import datetime
+
+# Configurable
+playMusic = False
+slouchSeconds = 3
 
 # Initial variables
 cap = cv2.VideoCapture(0)
@@ -13,16 +21,53 @@ detector = pdm.poseDetector()
 # userInput = ""
 Dist = []
 threshold = 0
+tips = []
+tipText = ""
 
+#Create an instance of Tkinter frame
+win = Tk()
+win.withdraw()
+win.title('Python Guides')
+#Set the geometry of Tkinter frame
+win.geometry("150x100")
+win.config(bg='#FFFFFF')
+
+
+# Store the tips in "tips" frmo "tips.txt"
+with open("tips.txt", "r") as f:
+    tips = f.read().split("\n")
 
 #_________________________________________________________________________#
 # FUNCTIONS
 #_________________________________________________________________________#
 
+def rickRoll():
+    playsound.playsound("Never Gonna Give You Up.mp3")
+
 def userInputProcedure(x):
     global userInput
     userInput = input(x)
 
+def introScreen():
+    success, img = cap.read()
+    h, w, c = img.shape
+
+    tipText = random.choice(tips)
+    
+    texts = ["Tip of the day:", tipText ]
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    for i in range (2):
+        # textsize = cv2.getTextSize(texts[i], font, 1, 2)
+        textsize = cv2.getTextSize("Hello world111111111", font, 1, 2)[0]
+    textX = (w - textsize[0]) / 2
+    textY = (h + textsize[1]) / 2
+
+    #text tips
+    cv2.rectangle(img, (0, 0), (w, h), 0, cv2.FILLED)
+    cv2.putText(img, texts[0], (int(textX), int(textY)), font, 1, (255, 255, 255), 2)
+    cv2.putText(img, texts[1], (int(textX), int(textY) + 50), font, 1, (255, 255, 255), 2)
+    cv2.imshow("Image", img)
+    cv2.waitKey(5000)
 
 def getDistance():
     # THREADING STUFF
@@ -40,17 +85,17 @@ def getDistance():
         #text
         text = ["Now Slouch", "Sit Straight"][i == 0]
         cv2.rectangle(img, (0, 0), (w, h), 0, cv2.FILLED)
-        cv2.putText(img, text, (50,50), cv2.FONT_HERSHEY_PLAIN, 5, (255, 0, 0), 5)
+        cv2.putText(img, text, (50, int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 4)
         
         cv2.imshow("Image", img)
-        cv2.waitKey(2000)
+        cv2.waitKey(1000)
         
         success, img = cap.read()
-        img = detector.findPose(img, True)    
+        img = detector.findPose(img, True)
         lmList = detector.findPosition(img)
         
         cv2.imshow("Image", img)
-        cv2.waitKey(2000)
+        cv2.waitKey(1000)
     
         # Get landmarks
         x1, y1 = lmList[11] # left shoulder
@@ -66,14 +111,18 @@ def getDistance():
         # Store the distance to our list
         Dist.append(distance)
     
+def popUpWindow():
+    win.lift()
+    win.attributes('-topmost',True)
+    win.after_idle(win.attributes,'-topmost',False)
+    messagebox.showwarning("Bad Posture Alert", "FIX YOUR POSTURE")
+    Button(win, text='Click Me').pack(pady=50)
+
 
 def slouchAlert():
-    print("STOP IT")
-    cv2.putText(img, "DONT SLOUCH BRO", (50,50), cv2.FONT_HERSHEY_PLAIN, 5, (255, 0, 0), 5)
-    cv2.imshow("Image", img)
-    cv2.waitKey(1000)
-    playsound.playsound("Never Gonna Give You Up.mp3")
-    distancePerFrame()
+    if playMusic:
+        threading.Thread(target=rickRoll).start()
+    popUpWindow()
 
 
 def distancePerFrame():
@@ -104,8 +153,9 @@ def distancePerFrame():
         # If slouching
         if distance < threshold:
             cv2.rectangle(img, (0, 0), (w, h), (0, 128, 255), cv2.FILLED)
-            if initTime + 2 < currentTime:
+            if initTime + slouchSeconds < currentTime:
                 slouchAlert()
+                initTime = currentTime
         # If good posture
         if distance >= threshold:
             initTime = currentTime
@@ -118,17 +168,18 @@ def distancePerFrame():
 #_________________________________________________________________________#
 
 # Introduction and Data Gathering
-print("Hello and welcome to $NAMEOFOURSOFTWARE!")
+print("Hello and welcome to Slouchn’t")
+
+# start the program with the intro screen
+introScreen()
 
 # Get distance between nose and shoulder
 getDistance()
 print("----------------------- this is the max distance", Dist[0])
 print("----------------------- this is the min distance", Dist[1])
 
-#Average of max and min distance 
-threshold = (Dist[0] + Dist[1])/3
+#Average of max and min distance
+threshold = (Dist[0] + Dist[1])/2.3
 print("----------------------- this is the threshold", threshold)
-
-time.sleep(3)
 
 distancePerFrame()
