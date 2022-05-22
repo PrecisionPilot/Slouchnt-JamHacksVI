@@ -2,7 +2,7 @@
 from hashlib import new
 import cv2
 from math import sqrt
-import Pose_detection_module as pdm
+import pose_detection_module as pdm
 import time
 import threading
 from tkinter import *
@@ -22,6 +22,8 @@ Dist = []
 threshold = 0
 tips = []
 tipText = ""
+initTime = 0
+currentTime = 0
 
 #Create an instance of Tkinter frame
 win = Tk()
@@ -122,7 +124,9 @@ def popUpWindow():
     messagebox.showwarning("Bad Posture Alert", "FIX YOUR POSTURE!")
     Button(win, text='Click Me').pack(pady=50)
 
+
 def distancePerFrame():
+    global initTime, currentTime
     initTime = 0
 
     while True:
@@ -150,8 +154,9 @@ def distancePerFrame():
             cv2.rectangle(img, (0, 0), (w, h), (98, 73, 119), cv2.FILLED)
             if initTime + slouchSeconds < currentTime:
                 slouchAlert()
+                currentTime = time.time()
                 initTime = currentTime
-        
+                
         # If good posture
         if distance >= threshold:
             initTime = currentTime
