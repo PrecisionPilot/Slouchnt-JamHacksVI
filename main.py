@@ -1,6 +1,6 @@
 import cv2
 from math import sqrt
-import pose_detection_module as pdm
+import Pose_detection_module as pdm
 import time
 import threading
 from tkinter import *
@@ -11,14 +11,14 @@ import random
 import datetime
 
 # Configurable
-playMusic = False
+playMusic = True
 slouchSeconds = 3
 
 # Initial variables
 cap = cv2.VideoCapture(0)
+quota = 0
 pTime = 0
 detector = pdm.poseDetector()
-# userInput = ""
 Dist = []
 threshold = 0
 tips = []
@@ -60,24 +60,20 @@ def introScreen():
     texts = ["Tip of the day:", tipText ]
     font = cv2.FONT_HERSHEY_SIMPLEX
     for i in range (2):
-        # textsize = cv2.getTextSize(texts[i], font, 1, 2)
-        textsize = cv2.getTextSize("Hello world111111111", font, 1, 2)[0]
+        textsize = cv2.getTextSize(texts[i], font, 1, 2)[0]
     textX = (w - textsize[0]) / 2
     textY = (h + textsize[1]) / 2
 
     #text tips
-    cv2.rectangle(img, (0, 0), (w, h), 0, cv2.FILLED)
-    cv2.putText(img, texts[0], (int(textX), int(textY)), font, 1, (255, 255, 255), 2)
-    cv2.putText(img, texts[1], (int(textX), int(textY) + 50), font, 1, (255, 255, 255), 2)
+    cv2.rectangle(img, (0, 0), (w, h), (98, 73, 119) , cv2.FILLED)
+    bulbImg = cv2.imread("bulb.png", 0)
+    cv2.imshow("Bulb", bulbImg)
+    cv2.putText(img, texts[0], (int(textX), int(textY)), font, 1, (255, 255, 255), 1)
+    cv2.putText(img, texts[1], (int(textX), int(textY) + 50), font, 1, (255, 255, 255), 1)
     cv2.imshow("Image", img)
     cv2.waitKey(5000)
 
 def getDistance():
-    # THREADING STUFF
-    # In order to run computer vision detection system and ask user input simultaneously, start a thread
-    # userInputThread = threading.Thread(target=userInputProcedure, args="type \"y\" in the console to confirm max distance between nose and upper chest")
-    # userInputThread.start()
-
     # Computer vision detection system
     global img
 
@@ -87,18 +83,18 @@ def getDistance():
         
         #text
         text = ["Now Slouch", "Sit Straight"][i == 0]
-        cv2.rectangle(img, (0, 0), (w, h), 0, cv2.FILLED)
-        cv2.putText(img, text, (50, int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 4)
+        cv2.rectangle(img, (0, 0), (w, h ), (98, 73, 119), cv2.FILLED)
+        cv2.putText(img, text, (50, int(h/2) + 50), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 2)
         
         cv2.imshow("Image", img)
-        cv2.waitKey(1000)
+        cv2.waitKey(2500)
         
         success, img = cap.read()
-        img = detector.findPose(img, True)
+        img = detector.findPose(img, False)
         lmList = detector.findPosition(img)
         
         cv2.imshow("Image", img)
-        cv2.waitKey(1000)
+        cv2.waitKey(2500)
     
         # Get landmarks
         x1, y1 = lmList[11] # left shoulder
@@ -113,12 +109,20 @@ def getDistance():
         
         # Store the distance to our list
         Dist.append(distance)
+
+        # Ending screen to tell user when to go back to normal
+        if i==1:
+            cv2.rectangle(img, (0, 0), (w, h), (98, 73, 119), cv2.FILLED)
+            cv2.putText(img, "Callibration", (50, int(h/2) + 50), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 2)
+            cv2.putText(img, "Complete", (70, int(h/2) + 50), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 2)
+            cv2.imshow("Image", img)
+            cv2.waitKey(2500)
     
 def popUpWindow():
     win.lift()
     win.attributes('-topmost',True)
     win.after_idle(win.attributes,'-topmost',False)
-    messagebox.showwarning("Bad Posture Alert", "FIX YOUR POSTURE")
+    messagebox.showwarning("Bad Posture Alert", "FIX YOUR POSTURE!")
     Button(win, text='Click Me').pack(pady=50)
 
 
@@ -127,6 +131,8 @@ def slouchAlert():
         threading.Thread(target=rickRoll).start()
     popUpWindow()
 
+def quotaCount():
+    quota += 1
 
 def distancePerFrame():
     initTime = 0
@@ -134,7 +140,7 @@ def distancePerFrame():
     while True:
         success, img = cap.read()
         h, w, c = img.shape
-        img = detector.findPose(img, True)    
+        img = detector.findPose(img, False)
         lmList = detector.findPosition(img)
 
         # Set time
@@ -155,7 +161,7 @@ def distancePerFrame():
 
         # If slouching
         if distance < threshold:
-            cv2.rectangle(img, (0, 0), (w, h), (0, 128, 255), cv2.FILLED)
+            cv2.rectangle(img, (0, 0), (w, h), (98, 73, 119), cv2.FILLED)
             if initTime + slouchSeconds < currentTime:
                 slouchAlert()
                 initTime = currentTime
@@ -166,15 +172,13 @@ def distancePerFrame():
         cv2.imshow("Image", img)
         cv2.waitKey(1)
 
+
 #_________________________________________________________________________#
 # Runtime
 #_________________________________________________________________________#
 
-# Introduction and Data Gathering
+#Introduction and Data Gathering
 print("Hello and welcome to Slouchn’t")
-
-# start the program with the intro screen
-introScreen()
 
 # start the program with the intro screen
 introScreen()
