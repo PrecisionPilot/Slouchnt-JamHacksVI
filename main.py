@@ -1,7 +1,8 @@
+# IMPORTS
 from hashlib import new
 import cv2
 from math import sqrt
-import pose_detection_module as pdm
+import Pose_detection_module as pdm
 import time
 import threading
 from tkinter import *
@@ -9,14 +10,10 @@ from tkinter import Tk
 from tkinter import messagebox
 import playsound as playsound
 import random
-import datetime
-import os
-
-# Configurable
-playMusic = True
-slouchSeconds = 3
 
 # Initial variables
+playMusic = True
+slouchSeconds = 3
 cap = cv2.VideoCapture(0)
 quota = 0
 pTime = 0
@@ -34,7 +31,7 @@ win.title('Python Guides')
 win.geometry("150x100")
 win.config(bg='#FFFFFF')
 
-# Store the tips in "tips" frmo "tips.txt"
+# Store the tips in "tips" from "tips.txt"
 with open("Assets/tips.txt", "r") as f:
     tips = f.read().split("\n")
 
@@ -44,10 +41,6 @@ with open("Assets/tips.txt", "r") as f:
 
 def rickRoll():
     playsound.playsound("Assets/Never Gonna Give You Up.mp3")
-
-def userInputProcedure(x):
-    global userInput
-    userInput = input(x)
 
 def introScreen():
     success, img = cap.read()
@@ -68,35 +61,13 @@ def introScreen():
     # cv2.imshow("Bulb", bulbImg)
     cv2.putText(img, texts[0], (int(textX), int(textY)), font, 1, (255, 255, 255), 1)
     cv2.putText(img, texts[1], (int(textX), int(textY) + 50), font, 1, (255, 255, 255), 1)
-
-    #User inputs their email
-    with open("Assets/email.txt", "r") as f:
-        contents = f.read()
-
-        # If nothing is in the file
-        if contents == "":
-            top = Tk()
-            L1 = Label(top, text = "Enter email: " )
-            L1.pack(side = LEFT)
-            emailAddress = Entry(top, bd = 5)
-            emailAddress.pack(side = RIGHT)
-
-            emailAddress = str(emailAddress)
-
-            with open("Assets/email.txt", "w") as f:
-                f.write(emailAddress)
-        # If email already exists in file
-        else:
-            emailAddress = contents
-            
-            
     cv2.imshow("Image", img)
 
 
 def getDistance():
-    # Computer vision detection system
     global img
 
+    # Computer vision detection system
     for i in range(2):
         success, img = cap.read()
         h, w, c = img.shape
@@ -150,28 +121,6 @@ def popUpWindow():
     messagebox.showwarning("Bad Posture Alert", "FIX YOUR POSTURE!")
     Button(win, text='Click Me').pack(pady=50)
 
-def quotaCount():
-    newDate = False
-
-    # Get current date
-    date = str(datetime.datetime.now())
-    date = date[0:10]
-    
-    # Check if "Assets/data.dat" file exists
-    if not os.post.exists("Assets/data.dat"):
-        newDate = True
-
-    # If file is empty, add current date
-    with open("Assets/data.dat", "a") as f:
-        if f.read() == "":
-            newDate = True
-    
-    if newDate:
-        with open("Assets/data.dat", "a") as f:
-            f.write(date)
-
-    quota += 1
-
 def distancePerFrame():
     initTime = 0
 
@@ -195,15 +144,13 @@ def distancePerFrame():
         # Distance between the nose and chest
         distance = sqrt(abs(upperChest[0] - nose[0]) ** 2 + abs(upperChest[1] - nose[1]) ** 2)
         
-        print(distance, threshold)
-
-        # If slouching
+        # If bad posture
         if distance < threshold:
             cv2.rectangle(img, (0, 0), (w, h), (98, 73, 119), cv2.FILLED)
             if initTime + slouchSeconds < currentTime:
                 slouchAlert()
-                quotaCount()
                 initTime = currentTime
+        
         # If good posture
         if distance >= threshold:
             initTime = currentTime
@@ -215,19 +162,14 @@ def distancePerFrame():
 # Runtime
 #_________________________________________________________________________#
 
-#Introduction and Data Gathering
-print("Hello and welcome to Slouchn’t")
-
 # start the program with the intro screen
 introScreen()
 
 # Get distance between nose and shoulder
 getDistance()
-print("----------------------- this is the max distance", Dist[0])
-print("----------------------- this is the min distance", Dist[1])
 
-#Average of max and min distance
-threshold = (Dist[0] + Dist[1])/2.3
-print("----------------------- this is the threshold", threshold)
+# Average of max and min distance
+threshold = (Dist[0] + Dist[1])/2.2
 
+# Begin the program
 distancePerFrame()
