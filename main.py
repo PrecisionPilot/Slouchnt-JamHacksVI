@@ -155,7 +155,7 @@ def distancePerFrame():
             if initTime + slouchSeconds < currentTime:
                 slouchAlert()
                 currentTime = time.time()
-                initTime = currentTime
+                initTime = currentTime + 2
                 
         # If good posture
         if distance >= threshold:
