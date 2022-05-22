@@ -8,5 +8,5 @@ print(date)
 
 
 
-with open("data.dat", "a") as f:
+with open("Assets/data.dat", "a") as f:
     f.write(date + "\n\n")
