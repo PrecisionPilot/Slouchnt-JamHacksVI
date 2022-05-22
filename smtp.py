@@ -3,7 +3,7 @@ import yagmail
 
 sender_email = "seanwaterloo2997@gmail.com"
 sender_password = ""
-with open("password.txt", "r") as f:
+with open("Assets/password.txt", "r") as f:
     sender_password = f.read()
 
 yag = yagmail.SMTP(user=sender_email, password=sender_password)
