@@ -36,10 +36,6 @@ win.config(bg='#FFFFFF')
 with open("tips.txt", "r") as f:
     tips = f.read().split("\n")
 
-# Store the tips in "tips" frmo "tips.txt"
-with open("tips.txt", "r") as f:
-    tips = f.read().split("\n")
-
 #_________________________________________________________________________#
 # FUNCTIONS
 #_________________________________________________________________________#
