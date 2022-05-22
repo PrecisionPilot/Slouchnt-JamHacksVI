@@ -57,8 +57,6 @@ def introScreen():
 
     #text tips
     cv2.rectangle(img, (0, 0), (w, h), (98, 73, 119) , cv2.FILLED)
-    # bulbImg = cv2.imread("bulb.png", 0)
-    # cv2.imshow("Bulb", bulbImg)
     cv2.putText(img, texts[0], (int(textX), int(textY)), font, 1, (255, 255, 255), 1)
     cv2.putText(img, texts[1], (int(textX), int(textY) + 50), font, 1, (255, 255, 255), 1)
     cv2.imshow("Image", img)
@@ -105,7 +103,7 @@ def getDistance():
         # Ending screen to tell user when to go back to normal
         if i==1:
             cv2.rectangle(img, (0, 0), (w, h), (98, 73, 119), cv2.FILLED)
-            cv2.putText(img, "Callibration", (50, int(h/2) - 50), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 2)
+            cv2.putText(img, "Calibration", (50, int(h/2) - 50), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 2)
             cv2.putText(img, "Complete", (70, int(h/2) + 50), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 2)
             cv2.imshow("Image", img)
             cv2.waitKey(2500)
