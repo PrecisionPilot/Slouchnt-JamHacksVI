@@ -2,6 +2,7 @@
 Save your poor posture with this legendary software
 
 [Devpost Link](https://devpost.com/software/slouchn-t?ref_content=my-projects-tab&ref_feature=my_projects)
+[YouTube Demo](https://youtu.be/v25uHHj_7GY)
 
 ## Inspiration
 *Slouchn’t* was inspired by the high rates of back pain induced by bad posture, which is a severe issue that affects people of all ages, especially students and adults. This issue continues to impact people today, and the habit of bad posture has only worsened ever since COVID-19 started. Thus, we’re introducing Slouchn’t, a very accessible and effective way to improve your posture while working on your laptop or computer.
